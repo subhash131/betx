@@ -1,0 +1,162 @@
+{
+  "version": "0.1.0",
+  "name": "bet_game",
+  "constants": [
+    { "name": "LOBBY_SEED", "type": "string", "value": "\"lobby\"" },
+    { "name": "USER_SEED", "type": "string", "value": "\"user\"" },
+    { "name": "MASTER_SEED", "type": "string", "value": "\"master\"" }
+  ],
+  "instructions": [
+    {
+      "name": "initMaster",
+      "accounts": [
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "registerUser",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "userName", "type": "string" }]
+    },
+    {
+      "name": "createLobby",
+      "accounts": [
+        { "name": "lobby", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "betAmount", "type": "u64" }]
+    },
+    {
+      "name": "joinLobby",
+      "accounts": [
+        { "name": "lobby", "isMut": true, "isSigner": false },
+        { "name": "playerTwo", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "lobbyId", "type": "u32" }]
+    },
+    {
+      "name": "placeBet",
+      "accounts": [
+        { "name": "lobby", "isMut": true, "isSigner": false },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "lobbyId", "type": "u32" }]
+    },
+    {
+      "name": "updateWinner",
+      "accounts": [
+        { "name": "lobby", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "lobbyId", "type": "u32" },
+        { "name": "winner", "type": "publicKey" }
+      ]
+    },
+    {
+      "name": "claimReward",
+      "accounts": [
+        { "name": "lobby", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "lobbyId", "type": "u32" }]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Master",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "lastId", "type": "u32" },
+          { "name": "owner", "type": "publicKey" }
+        ]
+      }
+    },
+    {
+      "name": "UserProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "publicKey" },
+          { "name": "userName", "type": "string" }
+        ]
+      }
+    },
+    {
+      "name": "Lobby",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u32" },
+          { "name": "playerOne", "type": "publicKey" },
+          { "name": "playerTwo", "type": { "option": "publicKey" } },
+          { "name": "betAmount", "type": "u64" },
+          { "name": "isActive", "type": "bool" },
+          { "name": "winner", "type": { "option": "publicKey" } },
+          { "name": "claimed", "type": "bool" },
+          { "name": "playerOnePlacedBet", "type": "bool" },
+          { "name": "playerTwoPlacedBet", "type": "bool" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "GameNotActive", "msg": "The game is not active." },
+    {
+      "code": 6001,
+      "name": "LobbyFull",
+      "msg": "Lobby full: players have already joined."
+    },
+    {
+      "code": 6002,
+      "name": "LobbyNotFound",
+      "msg": "Lobby Not Found: lobby not found, please validate the lobby id."
+    },
+    {
+      "code": 6003,
+      "name": "OwnerNotFound",
+      "msg": "Owner not found: Contract is not operational."
+    },
+    {
+      "code": 6004,
+      "name": "PlayersNotJoined",
+      "msg": "Waiting: player has not joined the game yet."
+    },
+    {
+      "code": 6005,
+      "name": "CannotJoinWithSameWallet",
+      "msg": "Cannot join with the same wallet"
+    },
+    { "code": 6006, "name": "UserNotInLobby", "msg": "User not in lobby" },
+    {
+      "code": 6007,
+      "name": "WinnerActionRestricted",
+      "msg": "Action restricted: only winners can perform this action."
+    },
+    {
+      "code": 6008,
+      "name": "RewardAlreadyClaimed",
+      "msg": "Reward already claimed"
+    },
+    {
+      "code": 6009,
+      "name": "OwnerPermissionDenied",
+      "msg": "Permission denied: only the owner can perform this action"
+    }
+  ]
+}
