@@ -1,15 +1,39 @@
 import { Wallet } from "@project-serum/anchor/dist/cjs/provider";
 import { AnchorProvider, BN, Program } from "@project-serum/anchor";
-import { PublicKey, LAMPORTS_PER_SOL, Connection } from "@solana/web3.js";
+import {
+  PublicKey,
+  LAMPORTS_PER_SOL,
+  Connection,
+  SystemProgram,
+} from "@solana/web3.js";
 import { Idl } from "@project-serum/anchor";
 
 import IDL from "./idl.json";
-import {
-  LOTTERY_SEED,
-  MASTER_SEED,
-  PROGRAM_ID,
-  TICKET_SEED,
-} from "./constants";
+import { LOBBY_SEED, USER_SEED, MASTER_SEED, PROGRAM_ID } from "./constants";
+import { confirmTx } from "./helpers";
+
+export const buyTicket = async (connection: Connection, wallet: Wallet) => {
+  const lotteryId = 4;
+  const program = getProgram(connection, wallet);
+  // const lotteryPk = await getLotteryAddress(lotteryId);
+  // const lottery = await program.account.lottery.fetch(lotteryPk);
+  // const ticket = await getTicketAddress(lotteryPk, lottery.lastTicketId);
+  try {
+    // const txHash = await program.methods
+    //   .buyTicket(lotteryId)
+    //   .accounts({
+    //     lottery: lotteryPk,
+    //     ticket,
+    //     buyer: wallet.publicKey,
+    //     systemProgram: SystemProgram.programId,
+    //   })
+    //   .rpc();
+    // const tx = await confirmTx(txHash, connection);
+    // console.log("🚀 ~ buyTicket ~ tx:", tx);
+  } catch (err) {
+    console.log("🚀 ~ buyTicket ~ err:", err);
+  }
+};
 
 // How to fetch our Program
 export const getProgram = (connection: Connection, wallet: Wallet) => {
@@ -20,34 +44,24 @@ export const getProgram = (connection: Connection, wallet: Wallet) => {
   return program;
 };
 
-export const getMasterAddress = async () => {
-  return (
-    await PublicKey.findProgramAddressSync(
-      [Buffer.from(MASTER_SEED)],
-      PROGRAM_ID
-    )
+export const getMasterAddress = () => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(MASTER_SEED)],
+    PROGRAM_ID
   )[0];
 };
 
-export const getLotteryAddress = async (id: string) => {
-  return (
-    await PublicKey.findProgramAddressSync(
-      [Buffer.from(LOTTERY_SEED), new BN(id).toArrayLike(Buffer, "le", 4)],
-      PROGRAM_ID
-    )
+export const getLobbyPk = (id: number) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(LOBBY_SEED), new BN(id).toArrayLike(Buffer, "le", 4)],
+    PROGRAM_ID
   )[0];
 };
 
-export const getTicketAddress = async (lotteryPk: PublicKey, id: BN) => {
-  return (
-    await PublicKey.findProgramAddressSync(
-      [
-        Buffer.from(TICKET_SEED),
-        lotteryPk.toBuffer(),
-        new BN(id).toArrayLike(Buffer, "le", 4),
-      ],
-      PROGRAM_ID
-    )
+export const getUserPk = (walletAddress: PublicKey) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(USER_SEED), walletAddress.toBuffer()],
+    PROGRAM_ID
   )[0];
 };
 
