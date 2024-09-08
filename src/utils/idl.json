@@ -20,6 +20,7 @@
       "name": "registerUser",
       "accounts": [
         { "name": "user", "isMut": true, "isSigner": false },
+        { "name": "master", "isMut": true, "isSigner": false },
         { "name": "authority", "isMut": true, "isSigner": true },
         { "name": "systemProgram", "isMut": false, "isSigner": false }
       ],
@@ -82,7 +83,8 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "lastId", "type": "u32" },
+          { "name": "lastLobbyId", "type": "u32" },
+          { "name": "userCount", "type": "u32" },
           { "name": "owner", "type": "publicKey" }
         ]
       }
