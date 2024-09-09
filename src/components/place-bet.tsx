@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 const PlaceBet = () => {
-  const [lobbyId] = useState<number>(2);
+  const [lobbyId] = useState<number>(4);
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
   const program = useProgram(connection, wallet);
