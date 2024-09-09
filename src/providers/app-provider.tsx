@@ -1,11 +1,6 @@
 "use client";
 import { store } from "@/state-manager/store";
 import {
-  ClientSideSuspense,
-  LiveblocksProvider,
-  RoomProvider,
-} from "@liveblocks/react";
-import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
@@ -24,19 +19,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <Provider store={store}>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets}>
-          <WalletModalProvider>
-            <LiveblocksProvider
-              publicApiKey={
-                "pk_dev_Bfpq5Ohfbe_SFvf09EBj799KqQMwWbz1S56k4LazSYCJyI-hJkZHZPocXrLokdh5"
-              }
-            >
-              <RoomProvider id="my-room">
-                <ClientSideSuspense fallback={<div>Loading…</div>}>
-                  {children}
-                </ClientSideSuspense>
-              </RoomProvider>
-            </LiveblocksProvider>
-          </WalletModalProvider>
+          <WalletModalProvider>{children}</WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
     </Provider>
