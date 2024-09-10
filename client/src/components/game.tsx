@@ -41,24 +41,6 @@ const Game = () => {
         } else if (keyControl.w.pressed) {
           player.velocity.y = -10;
         }
-
-        // update enemy
-        if (others.length <= 0) return;
-        enemy.velocity.x = 0;
-        const {
-          presence: { keyControl: enemyKeyControl },
-        } = others[0];
-
-        if (enemyKeyControl.a.pressed && enemyKeyControl.lastKey === "a") {
-          enemy.velocity.x += -1;
-        } else if (
-          enemyKeyControl.d.pressed &&
-          enemyKeyControl.lastKey === "d"
-        ) {
-          enemy.velocity.x += 1;
-        } else if (enemyKeyControl.w.pressed) {
-          enemy.velocity.y += -10;
-        }
       }
       animateFrame = requestAnimationFrame(animate);
     }
