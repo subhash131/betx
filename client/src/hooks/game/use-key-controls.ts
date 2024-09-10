@@ -63,8 +63,6 @@ export const useKeyControls = () => {
       document.removeEventListener("keyup", handleKeyup);
     };
   }, []);
-  console.log("🚀 ~ useKeyControls ~ keys:", keys);
-  updatePresence({ keyControl: keys });
 
   return keys;
 };
