@@ -25,8 +25,18 @@ export function Room({
         id={roomId}
         autoConnect
         initialPresence={{
-          position: { x: 0, y: 0 },
-          velocity: { x: 0, y: 0 },
+          keyControl: {
+            lastKey: "",
+            a: {
+              pressed: false,
+            },
+            d: {
+              pressed: false,
+            },
+            w: {
+              pressed: false,
+            },
+          },
         }}
         // initialStorage={{
         //   playerOne: {

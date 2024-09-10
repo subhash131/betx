@@ -9,8 +9,20 @@ declare global {
     // Each user's Presence, for useMyPresence, useOthers, etc.
     Presence: {
       // Example, real-time cursor coordinates
-      velocity: Velocity;
-      position: Position;
+      //   velocity: Velocity;
+      //   position: Position;
+      keyControl: {
+        lastKey: string;
+        a: {
+          pressed: boolean;
+        };
+        d: {
+          pressed: boolean;
+        };
+        w: {
+          pressed: boolean;
+        };
+      };
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
