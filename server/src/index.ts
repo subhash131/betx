@@ -39,6 +39,44 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("keydown", (player) => {
+    if (!player.player) {
+      console.log("player not found");
+      return;
+    }
+    switch (player.key) {
+      case "a":
+        players[player.player].velocity.x = -1;
+        break;
+      case "d":
+        players[player.player].velocity.x = 1;
+        break;
+      case "w":
+        players[player.player].velocity.y = -10;
+        break;
+    }
+    io.emit("updatePlayers", players);
+  });
+
+  socket.on("keyup", (player) => {
+    if (!player.player) {
+      console.log("player not found");
+      return;
+    }
+    switch (player.key) {
+      case "a":
+        players[player.player].velocity.x = 0;
+        break;
+      case "d":
+        players[player.player].velocity.x = 0;
+        break;
+      case "w":
+        players[player.player].velocity.y = 0;
+        break;
+    }
+    io.emit("updatePlayers", players);
+  });
+
   socket.on("walletDisconnect", (wallet) => {
     delete players[wallet];
     io.emit("updatePlayers", players);

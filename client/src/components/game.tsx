@@ -15,17 +15,18 @@ export type Players = {
 const ioServer = process.env.NEXT_PUBLIC_SERVER;
 console.log("🚀 ~ ioServer:", ioServer);
 
-const players: Players = {};
+export const players: Players = {};
 
 const Game = () => {
+  const [walletAddress, setWalletAddress] = useState<string>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wallet = useAnchorWallet();
-  const [walletAdd, setWalletAdd] = useState<string>();
   const newSocket = useMemo(
     () => io(ioServer || "https://betx.onrender.com"),
     [wallet]
   );
 
+  // Manage players
   useEffect(() => {
     const dpr = devicePixelRatio || 1;
     const canvas = canvasRef.current;
@@ -33,9 +34,9 @@ const Game = () => {
     if (!ctx || !canvas) {
       return;
     }
-    const walletAddress = wallet?.publicKey.toString();
+    const walletAdd = wallet?.publicKey.toString();
+    setWalletAddress(walletAdd);
     if (!walletAddress) return;
-    setWalletAdd(walletAddress);
     newSocket.emit("walletConnect", walletAddress);
     console.log("🚀 ~ useEffect ~ walletAddress:", walletAddress);
 
@@ -51,6 +52,8 @@ const Game = () => {
             dpr,
             color: key == walletAddress ? "blue" : "red",
           });
+        } else {
+          players[key].velocity = _players[key].velocity;
         }
       }
       //remove players
@@ -62,13 +65,61 @@ const Game = () => {
     });
 
     newSocket.on("disconnect", (reason) => {
-      if (!walletAdd) return;
-      delete players[walletAdd];
+      if (!walletAddress) return;
+      delete players[walletAddress];
       console.log("Disconnected from server, reason:", reason);
     });
 
+    const handleKeyup = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "a":
+        case "A":
+        case "ArrowLeft":
+          socket.emit("keyup", { key: "a", player: walletAddress });
+          players[walletAddress].velocity.x = 0;
+          break;
+        case "d":
+        case "D":
+        case "ArrowRight":
+          socket.emit("keyup", { key: "d", player: walletAddress });
+          players[walletAddress].velocity.x = 0;
+          break;
+        case "w":
+        case "ArrowUp":
+          socket.emit("keyup", { key: "w", player: walletAddress });
+          players[walletAddress].velocity.y = 0;
+          break;
+      }
+    };
+    const handleKeydown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "a":
+        case "A":
+        case "ArrowLeft":
+          socket.emit("keydown", { key: "a", player: walletAddress });
+          players[walletAddress].velocity.x = -1;
+          break;
+        case "d":
+        case "D":
+        case "ArrowRight":
+          socket.emit("keydown", { key: "d", player: walletAddress });
+          players[walletAddress].velocity.x = 1;
+          break;
+        case "w":
+        case "ArrowUp":
+          socket.emit("keydown", { key: "w", player: walletAddress });
+          players[walletAddress].velocity.y = -10;
+          break;
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("keyup", handleKeyup);
+
     return () => {
-      newSocket.emit("walletDisconnect", walletAdd);
+      document.removeEventListener("keydown", handleKeydown);
+      document.removeEventListener("keyup", handleKeyup);
+      newSocket.emit("walletDisconnect", walletAddress);
       socket.disconnect();
     };
   }, [wallet?.publicKey]);
