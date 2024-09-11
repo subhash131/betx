@@ -12,7 +12,8 @@ export type Players = {
   [playerId: string]: Sprite;
 };
 
-const ioServer = process.env.PUBLIC_SERVER;
+const ioServer = process.env.NEXT_PUBLIC_SERVER;
+console.log("🚀 ~ ioServer:", ioServer);
 
 const players: Players = {};
 
