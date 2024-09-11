@@ -2,12 +2,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Sprite } from "@/classes/Sprite";
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { io } from "socket.io-client";
 import WalletButton from "./wallet-button";
 import { socket } from "@/socket";
 
-// const sprites: Sprite[] = [];
 export type Players = {
   [playerId: string]: Sprite;
 };
@@ -20,40 +19,67 @@ export const players: Players = {};
 const Game = () => {
   const [walletAddress, setWalletAddress] = useState<string>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const wallet = useAnchorWallet();
+  const { publicKey, connected } = useWallet();
   const newSocket = useMemo(
     () => io(ioServer || "https://betx.onrender.com"),
-    [wallet]
+    [publicKey]
   );
+
+  useEffect(() => {
+    if (!connected && walletAddress) {
+      newSocket.emit("walletDisconnect", walletAddress);
+    } else {
+      newSocket.emit("walletDisconnect", walletAddress);
+    }
+    return () => {
+      newSocket.emit("walletDisconnect", walletAddress);
+    };
+  }, [connected]);
 
   // Manage players
   useEffect(() => {
+    if (!connected) return;
     const dpr = devicePixelRatio || 1;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!ctx || !canvas) {
       return;
     }
-    const walletAdd = wallet?.publicKey.toString();
-    setWalletAddress(walletAdd);
-    if (!walletAddress) return;
+
+    setWalletAddress(publicKey?.toString());
+    if (!walletAddress) {
+      return;
+    }
+
     newSocket.emit("walletConnect", walletAddress);
     console.log("🚀 ~ useEffect ~ walletAddress:", walletAddress);
 
     newSocket.on("updatePlayers", (_players) => {
       console.log("🚀 ~ newSocket.on ~ _players:", _players);
       //add backend players to frontend
+      const fifteenPercentOfInnerWidth = window.innerWidth * 0.15 * dpr;
+      const eightyFivePercentOfInnerWidth = window.innerWidth * 0.85 * dpr;
       for (const key in _players) {
         if (!players[key]) {
           players[key] = new Sprite({
             canvas,
             ctx,
-            position: { x: Math.random() * innerWidth, y: 0 },
+            position: {
+              x:
+                walletAddress === key
+                  ? fifteenPercentOfInnerWidth
+                  : eightyFivePercentOfInnerWidth,
+              y: 0,
+            },
             dpr,
             color: key == walletAddress ? "blue" : "red",
           });
         } else {
-          players[key].velocity = _players[key].velocity;
+          players[key].velocity.x =
+            key === walletAddress
+              ? _players[key].velocity.x
+              : _players[key].velocity.x * -1;
+          players[key].velocity.y = _players[key].velocity.y;
         }
       }
       //remove players
@@ -119,10 +145,8 @@ const Game = () => {
     return () => {
       document.removeEventListener("keydown", handleKeydown);
       document.removeEventListener("keyup", handleKeyup);
-      newSocket.emit("walletDisconnect", walletAddress);
-      socket.disconnect();
     };
-  }, [wallet?.publicKey]);
+  }, [publicKey]);
 
   useEffect(() => {
     let animateFrame: number;
@@ -154,7 +178,7 @@ const Game = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden relative">
+    <div className="w-screen h-screen overflow- relative">
       <div className="absolute top-0">
         <WalletButton />
       </div>
