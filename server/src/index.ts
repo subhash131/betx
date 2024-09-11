@@ -46,13 +46,13 @@ io.on("connection", (socket) => {
     }
     switch (player.key) {
       case "a":
-        players[player.player].velocity.x = -1;
+        players[player.player].velocity.x = -5;
         break;
       case "d":
-        players[player.player].velocity.x = 1;
+        players[player.player].velocity.x = 5;
         break;
       case "w":
-        players[player.player].velocity.y = -10;
+        players[player.player].velocity.y = -20;
         break;
     }
     io.emit("updatePlayers", players);

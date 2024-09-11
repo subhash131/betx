@@ -12,7 +12,7 @@ type SpriteConstructor = {
 };
 
 export class Sprite {
-  static gravity = 0.2;
+  static gravity = 0.7;
   ctx: CanvasRenderingContext2D;
   position: Position;
   velocity: Velocity;
@@ -20,6 +20,11 @@ export class Sprite {
   canvas: HTMLCanvasElement;
   width: number;
   color: string;
+  attackBox: {
+    position: Position;
+    width: number;
+    height: number;
+  };
 
   constructor({
     position,
@@ -38,15 +43,30 @@ export class Sprite {
     this.height = height * dpr;
     this.width = width * dpr;
     this.color = color;
+    this.attackBox = {
+      position: this.position,
+      height: this.height / 3,
+      width: this.width * 2.2,
+    };
   }
 
   draw() {
+    // player
     this.ctx.fillStyle = this.color;
     this.ctx.fillRect(
       this.position.x,
       this.position.y,
       this.width,
       this.height
+    );
+
+    //attack box
+    this.ctx.fillStyle = "green";
+    this.ctx.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
     );
   }
 
@@ -62,7 +82,7 @@ export class Sprite {
     } else {
       this.position.x += this.velocity.x;
     }
-    if (this.position.y + this.height >= this.canvas.height) {
+    if (this.position.y + this.height >= this.canvas.height - 200) {
       this.velocity.y = 0;
     } else {
       this.velocity.y += Sprite.gravity;

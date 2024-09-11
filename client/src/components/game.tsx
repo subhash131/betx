@@ -113,7 +113,6 @@ const Game = () => {
         case "w":
         case "ArrowUp":
           socket.emit("keyup", { key: "w", player: walletAddress });
-          players[walletAddress].velocity.y = 0;
           break;
       }
     };
@@ -123,18 +122,17 @@ const Game = () => {
         case "A":
         case "ArrowLeft":
           socket.emit("keydown", { key: "a", player: walletAddress });
-          players[walletAddress].velocity.x = -1;
+          players[walletAddress].velocity.x = -5;
           break;
         case "d":
         case "D":
         case "ArrowRight":
           socket.emit("keydown", { key: "d", player: walletAddress });
-          players[walletAddress].velocity.x = 1;
+          players[walletAddress].velocity.x = 5;
           break;
         case "w":
         case "ArrowUp":
           socket.emit("keydown", { key: "w", player: walletAddress });
-          players[walletAddress].velocity.y = -10;
           break;
       }
     };
