@@ -8,7 +8,7 @@ const server = http.createServer(app);
 const port = process.env.PORT || 8000;
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://betx-nine.vercel.app/"],
     methods: ["GET", "POST"],
     allowedHeaders: ["*"],
   },
