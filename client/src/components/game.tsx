@@ -12,13 +12,18 @@ export type Players = {
   [playerId: string]: Sprite;
 };
 
+const ioServer = process.env.PUBLIC_SERVER;
+
 const players: Players = {};
 
 const Game = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wallet = useAnchorWallet();
   const [walletAdd, setWalletAdd] = useState<string>();
-  const newSocket = useMemo(() => io("http://localhost:8000"), [wallet]);
+  const newSocket = useMemo(
+    () => io(ioServer || "http://localhost:8000"),
+    [wallet]
+  );
 
   useEffect(() => {
     const dpr = devicePixelRatio || 1;
