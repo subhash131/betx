@@ -18,7 +18,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets}>
+        <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>{children}</WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
