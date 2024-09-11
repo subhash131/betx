@@ -5,6 +5,10 @@ type SpriteConstructor = {
   canvas: HTMLCanvasElement;
   position: Position;
   velocity?: Velocity;
+  width?: number;
+  height?: number;
+  dpr?: number;
+  color?: string;
 };
 
 export class Sprite {
@@ -15,23 +19,35 @@ export class Sprite {
   height: number;
   canvas: HTMLCanvasElement;
   width: number;
+  color: string;
+
   constructor({
     position,
     ctx,
     canvas,
     velocity = { x: 0, y: 0 },
+    height = 150,
+    width = 50,
+    dpr = 1,
+    color = "red",
   }: SpriteConstructor) {
     this.position = position;
     this.canvas = canvas;
     this.velocity = velocity;
     this.ctx = ctx;
-    this.height = 150;
-    this.width = 150;
+    this.height = height * dpr;
+    this.width = width * dpr;
+    this.color = color;
   }
 
   draw() {
-    this.ctx.fillStyle = "red";
-    this.ctx.fillRect(this.position.x, this.position.y, 50, 150);
+    this.ctx.fillStyle = this.color;
+    this.ctx.fillRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
   }
 
   update() {
