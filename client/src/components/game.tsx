@@ -22,7 +22,7 @@ const Game = () => {
   const wallet = useAnchorWallet();
   const [walletAdd, setWalletAdd] = useState<string>();
   const newSocket = useMemo(
-    () => io(ioServer || "http://localhost:8000"),
+    () => io(ioServer || "https://betx.onrender.com"),
     [wallet]
   );
 
