@@ -1,7 +1,7 @@
-export type Player = {
+export type Players = {
   [playerId: string]: {
-    position: Vector;
     velocity: Vector;
+    position: Vector;
   };
 };
 
