@@ -1,7 +1,7 @@
 // Define Liveblocks types for your application
 
 import { Position, Velocity } from "@/classes/types";
-import { LiveObject } from "@liveblocks/client";
+import { LiveMap, LiveObject } from "@liveblocks/client";
 
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
 declare global {
@@ -11,18 +11,6 @@ declare global {
       // Example, real-time cursor coordinates
       //   velocity: Velocity;
       //   position: Position;
-      keyControl: {
-        lastKey: string;
-        a: {
-          pressed: boolean;
-        };
-        d: {
-          pressed: boolean;
-        };
-        w: {
-          pressed: boolean;
-        };
-      };
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
@@ -37,6 +25,7 @@ declare global {
       //   playerTwo: {
       //     walletAddress: string;
       //   };
+      players: LiveMap<string, { position: Position; velocity: Velocity }>;
     };
 
     // Custom user info set when authenticating with a secret key
@@ -71,4 +60,4 @@ declare global {
   }
 }
 
-export {};
+export {  };
