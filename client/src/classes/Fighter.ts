@@ -14,6 +14,13 @@ type FighterConstructor = {
   framesMax: number;
   scale: number;
   imageOffset: { x: number; y: number };
+  sprites: {
+    [action: string]: {
+      framesMax: number;
+      imageSrc: string;
+      image?: HTMLImageElement;
+    };
+  };
 };
 
 export class Fighter {
@@ -40,6 +47,13 @@ export class Fighter {
   scale: number;
   imageSrc: string;
   imageOffset: { x: number; y: number };
+  sprites: {
+    [action: string]: {
+      framesMax: number;
+      imageSrc: string;
+      image?: HTMLImageElement;
+    };
+  };
 
   constructor({
     position,
@@ -55,6 +69,7 @@ export class Fighter {
     framesMax,
     scale = 1,
     imageOffset,
+    sprites,
   }: FighterConstructor) {
     this.position = position;
     this.canvas = canvas;
@@ -73,11 +88,17 @@ export class Fighter {
     this.scale = scale;
     this.imageOffset = imageOffset;
     this.imageSrc = imageSrc;
+    this.sprites = sprites;
     this.image = new Image();
     this.image.src = imageSrc;
     this.image.onload = () => {
       this.update(); // Start drawing once the image has loaded
     };
+
+    for (const sprite in sprites) {
+      sprites[sprite].image = new Image();
+      sprites[sprite].image.src = sprites[sprite].imageSrc;
+    }
   }
 
   attack() {

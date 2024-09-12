@@ -18,7 +18,37 @@ export const samuraiSPrites = {
     framesMax: 8,
   },
   attack1: {
-    imageSrc: "/samuraiMack/Attack1.png",
+    imageSrc: "/samuraiMack/Attack2.png",
+    framesMax: 6,
+  },
+  jump: {
+    imageSrc: "/samuraiMack/Jump.png",
+    framesMax: 2,
+  },
+  takeHit: {
+    imageSrc: "/samuraiMack/TakeHitWhite.png",
+    framesMax: 4,
+  },
+};
+export const kenjiSPrites = {
+  idle: {
+    imageSrc: "/kenji/Idle.png",
+    framesMax: 4,
+  },
+  run: {
+    imageSrc: "/kenji/Run.png",
     framesMax: 8,
+  },
+  attack1: {
+    imageSrc: "/kenji/Attack1.png",
+    framesMax: 4,
+  },
+  jump: {
+    imageSrc: "/kenji/Jump.png",
+    framesMax: 2,
+  },
+  takeHit: {
+    imageSrc: "/kenji/TakeHit.png",
+    framesMax: 3,
   },
 };

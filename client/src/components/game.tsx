@@ -7,6 +7,7 @@ import { io } from "socket.io-client";
 import WalletButton from "./wallet-button";
 import { socket } from "@/socket";
 import { Background } from "@/classes/Background";
+import { kenjiSPrites, samuraiSPrites } from "@/utils/constants";
 
 export type Players = {
   [playerId: string]: Fighter;
@@ -62,38 +63,82 @@ const Game = () => {
       const eightyFivePercentOfInnerWidth = window.innerWidth * 0.75 * dpr;
       for (const key in _players) {
         if (!players[key]) {
-          players[key] = new Fighter({
-            canvas,
-            ctx,
-            position: {
-              x:
-                walletAddress === key
-                  ? fifteenPercentOfInnerWidth
-                  : eightyFivePercentOfInnerWidth,
-              y: 0,
-            },
-            dpr,
-            color: key == walletAddress ? "blue" : "red",
-            isEnemy: key == walletAddress,
-            imageSrc:
-              key == walletAddress
-                ? "/samuraiMack/Idle.png"
-                : "/kenji/Idle.png",
-            framesMax: key == walletAddress ? 8 : 4,
-            scale: 5,
-            imageOffset: {
-              x: 500,
-              y: 500,
-            },
-          });
+          if (key == walletAddress) {
+            players[key] = new Fighter({
+              canvas,
+              ctx,
+              position: {
+                x: fifteenPercentOfInnerWidth,
+                y: 0,
+              },
+              dpr,
+              color: "blue",
+              isEnemy: false,
+              imageSrc: "/samuraiMack/Idle.png",
+              framesMax: 8,
+              scale: 5,
+              imageOffset: {
+                x: 450,
+                y: 500,
+              },
+              sprites: samuraiSPrites,
+            });
+          } else {
+            players[key] = new Fighter({
+              canvas,
+              ctx,
+              position: {
+                x: eightyFivePercentOfInnerWidth,
+                y: 0,
+              },
+              dpr,
+              color: "red",
+              isEnemy: false,
+              imageSrc: "/kenji/Idle.png",
+              framesMax: 4,
+              scale: 5,
+              imageOffset: {
+                x: 500,
+                y: 500,
+              },
+              sprites: kenjiSPrites,
+            });
+          }
         } else {
-          players[key].velocity.x =
-            key === walletAddress
-              ? _players[key].velocity.x
-              : _players[key].velocity.x * -1;
+          if (key == walletAddress) {
+            players[key].velocity.x = _players[key].velocity.x;
+          } else {
+            players[key].velocity.x = _players[key].velocity.x * -1;
+          }
           players[key].velocity.y = _players[key].velocity.y;
           if (_players[key].isAttacking) {
             players[key].attack();
+          }
+          console.log(
+            "🚀 ~ newSocket.on ~ _players.action:",
+            _players[key].action
+          );
+          switch (_players[key].action) {
+            case "IDLE":
+              players[key].image = players[key].sprites.idle.image!;
+              players[key].framesMax = players[key].sprites.idle.framesMax;
+              break;
+            case "RUN":
+              players[key].image = players[key].sprites.run.image!;
+              players[key].framesMax = players[key].sprites.run.framesMax;
+              break;
+            case "ATTACK":
+              players[key].image = players[key].sprites.attack1.image!;
+              players[key].framesMax = players[key].sprites.attack1.framesMax;
+              break;
+            case "JUMP":
+              players[key].image = players[key].sprites.jump.image!;
+              players[key].framesMax = players[key].sprites.jump.framesMax;
+              break;
+            case "TAKE_HIT":
+              players[key].image = players[key].sprites.takeHit.image!;
+              players[key].framesMax = players[key].sprites.takeHit.framesMax;
+              break;
           }
         }
         if (enemyRef.current && playerRef.current) {
