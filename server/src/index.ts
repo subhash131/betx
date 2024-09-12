@@ -35,6 +35,7 @@ io.on("connection", (socket) => {
         velocity: { x: 0, y: 0 },
         isAttacking: false,
         health: 100,
+        action: "IDLE",
       };
       io.emit("updatePlayers", players);
     }
@@ -43,7 +44,12 @@ io.on("connection", (socket) => {
   socket.on("attack", (wallet) => {
     if (players[wallet].health > 0) {
       players[wallet].health -= 1;
+      players[wallet].action = "TAKE_HIT";
       io.emit("updatePlayers", players);
+      setTimeout(() => {
+        players[wallet].action = "IDLE";
+        io.emit("updatePlayers", players);
+      }, 250);
     }
     console.log(players);
   });
@@ -57,15 +63,19 @@ io.on("connection", (socket) => {
     switch (player.key) {
       case "a":
         players[player.player].velocity.x = -5;
+        players[player.player].action = "RUN";
         break;
       case "d":
         players[player.player].velocity.x = 5;
+        players[player.player].action = "RUN";
         break;
       case "w":
         players[player.player].velocity.y = -20;
+        players[player.player].action = "JUMP";
         break;
       case "space":
         players[player.player].isAttacking = true;
+        players[player.player].action = "ATTACK";
         break;
     }
     io.emit("updatePlayers", players);
@@ -90,6 +100,7 @@ io.on("connection", (socket) => {
         players[player.player].isAttacking = false;
         break;
     }
+    players[player.player].action = "IDLE";
     io.emit("updatePlayers", players);
   });
 

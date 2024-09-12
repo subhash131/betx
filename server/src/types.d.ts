@@ -3,6 +3,7 @@ export type Players = {
     velocity: Vector;
     isAttacking: boolean;
     health: number;
+    action: string;
   };
 };
 
