@@ -9,6 +9,7 @@ type SpriteConstructor = {
   height?: number;
   dpr?: number;
   color?: string;
+  isEnemy: boolean;
 };
 
 export class Sprite {
@@ -20,12 +21,13 @@ export class Sprite {
   canvas: HTMLCanvasElement;
   width: number;
   color: string;
+  isAttacking: boolean = false;
   attackBox: {
     position: Position;
     width: number;
     height: number;
   };
-
+  isEnemy: boolean = false;
   constructor({
     position,
     ctx,
@@ -35,6 +37,7 @@ export class Sprite {
     width = 50,
     dpr = 1,
     color = "red",
+    isEnemy,
   }: SpriteConstructor) {
     this.position = position;
     this.canvas = canvas;
@@ -48,6 +51,14 @@ export class Sprite {
       height: this.height / 3,
       width: this.width * 2.2,
     };
+    this.isEnemy = isEnemy;
+  }
+
+  attack() {
+    this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);
   }
 
   draw() {
@@ -61,13 +72,17 @@ export class Sprite {
     );
 
     //attack box
-    this.ctx.fillStyle = "green";
-    this.ctx.fillRect(
-      this.attackBox.position.x,
-      this.attackBox.position.y,
-      this.attackBox.width,
-      this.attackBox.height
-    );
+    if (this.isAttacking) {
+      this.ctx.fillStyle = "green";
+      this.ctx.fillRect(
+        this.isEnemy
+          ? this.attackBox.position.x
+          : this.attackBox.position.x - this.attackBox.width + this.width,
+        this.attackBox.position.y,
+        this.attackBox.width,
+        this.attackBox.height
+      );
+    }
   }
 
   update() {

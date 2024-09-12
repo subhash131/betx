@@ -33,13 +33,14 @@ io.on("connection", (socket) => {
     if (!players[wallet]) {
       players[wallet] = {
         velocity: { x: 0, y: 0 },
-        position: { x: 0, y: 0 },
+        isAttacking: false,
       };
       io.emit("updatePlayers", players);
     }
   });
 
   socket.on("keydown", (player) => {
+    console.log("keydown", player.key);
     if (!player.player) {
       console.log("player not found");
       return;
@@ -53,6 +54,9 @@ io.on("connection", (socket) => {
         break;
       case "w":
         players[player.player].velocity.y = -20;
+        break;
+      case "space":
+        players[player.player].isAttacking = true;
         break;
     }
     io.emit("updatePlayers", players);
@@ -73,6 +77,9 @@ io.on("connection", (socket) => {
       case "w":
         players[player.player].velocity.y = 0;
         break;
+      case "space":
+        players[player.player].isAttacking = false;
+        break;
     }
     io.emit("updatePlayers", players);
   });
@@ -81,30 +88,6 @@ io.on("connection", (socket) => {
     delete players[wallet];
     io.emit("updatePlayers", players);
     console.log("🚀 ~ walletDisconnect ::", players);
-  });
-
-  socket.on("keyControl", (data) => {
-    console.log(data);
-    if (!data.walletAdd) return;
-    if (!players[data.walletAdd]) {
-      console.log("hello");
-      players[data.walletAdd] = {
-        velocity: { x: 0, y: 0 },
-        position: { x: 0, y: 0 },
-      };
-    }
-    if (data.key === "d") {
-      players[data.walletAdd].velocity.y = 1;
-    } else if (data.key === "a") {
-      players[data.walletAdd].velocity.y = -1;
-    } else if (data.key === "w") {
-      players[data.walletAdd].velocity.x = 10;
-    } else {
-      players[data.walletAdd].velocity.y = 0;
-      players[data.walletAdd].velocity.x = 0;
-    }
-    socket.emit("updatePlayers", players);
-    console.log("keyControl", players);
   });
 
   // Emit updated players list

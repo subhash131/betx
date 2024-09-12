@@ -52,10 +52,8 @@ const Game = () => {
     }
 
     newSocket.emit("walletConnect", walletAddress);
-    // console.log("🚀 ~ useEffect ~ walletAddress:", walletAddress);
 
     newSocket.on("updatePlayers", (_players) => {
-      // console.log("🚀 ~ newSocket.on ~ _players:", _players);
       //add backend players to frontend
       const fifteenPercentOfInnerWidth = window.innerWidth * 0.15 * dpr;
       const eightyFivePercentOfInnerWidth = window.innerWidth * 0.85 * dpr;
@@ -73,6 +71,7 @@ const Game = () => {
             },
             dpr,
             color: key == walletAddress ? "blue" : "red",
+            isEnemy: key == walletAddress,
           });
         } else {
           players[key].velocity.x =
@@ -80,6 +79,10 @@ const Game = () => {
               ? _players[key].velocity.x
               : _players[key].velocity.x * -1;
           players[key].velocity.y = _players[key].velocity.y;
+
+          if (_players[key].isAttacking) {
+            players[key].attack();
+          }
         }
       }
       //remove players
@@ -97,42 +100,44 @@ const Game = () => {
     });
 
     const handleKeyup = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "a":
-        case "A":
+      switch (e.code) {
+        case "KeyA":
         case "ArrowLeft":
           socket.emit("keyup", { key: "a", player: walletAddress });
           players[walletAddress].velocity.x = 0;
           break;
-        case "d":
-        case "D":
+        case "KeyD":
         case "ArrowRight":
           socket.emit("keyup", { key: "d", player: walletAddress });
           players[walletAddress].velocity.x = 0;
           break;
-        case "w":
+        case "KeyW":
         case "ArrowUp":
           socket.emit("keyup", { key: "w", player: walletAddress });
+          break;
+        case "Space":
+          socket.emit("keyup", { key: "space", player: walletAddress });
           break;
       }
     };
     const handleKeydown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "a":
-        case "A":
+      switch (e.code) {
+        case "KeyA":
         case "ArrowLeft":
           socket.emit("keydown", { key: "a", player: walletAddress });
           players[walletAddress].velocity.x = -5;
           break;
-        case "d":
-        case "D":
+        case "KeyD":
         case "ArrowRight":
           socket.emit("keydown", { key: "d", player: walletAddress });
           players[walletAddress].velocity.x = 5;
           break;
-        case "w":
+        case "KeyW":
         case "ArrowUp":
           socket.emit("keydown", { key: "w", player: walletAddress });
+          break;
+        case "Space":
+          socket.emit("keydown", { key: "space", player: walletAddress });
           break;
       }
     };
@@ -157,12 +162,12 @@ const Game = () => {
     }
     if (!ctx || !canvas) return;
 
+    let player: Sprite | null = null;
+    let enemy: Sprite | null = null;
+
     function animate() {
       if (canvas && ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        let player: Sprite | null = null;
-        let enemy: Sprite | null = null;
         for (let i in players) {
           players[i].update();
           if (i == walletAddress) {
@@ -179,10 +184,10 @@ const Game = () => {
               player.attackBox.position.x <= enemy.position.x + enemy.width &&
               player.attackBox.position.y + player.attackBox.height >=
                 enemy.position.y &&
-              player.attackBox.position.y <= enemy.position.y + enemy.height;
-
+              player.attackBox.position.y <= enemy.position.y + enemy.height &&
+              player.isAttacking;
             if (attack) {
-              console.log("attack");
+              player.isAttacking = false;
             }
           }
         }

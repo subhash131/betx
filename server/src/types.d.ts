@@ -1,7 +1,7 @@
 export type Players = {
   [playerId: string]: {
     velocity: Vector;
-    position: Vector;
+    isAttacking: boolean;
   };
 };
 
