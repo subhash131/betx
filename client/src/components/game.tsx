@@ -218,7 +218,7 @@ const Game = () => {
     <div className="w-screen h-screen overflow- relative">
       <div className="absolute top-0 w-screen h-screen bg-transparent flex overflow-hidden flex-col justify-between">
         <div className="size-full h-24 flex items-center justify-between py-4 px-10">
-          <div className="w-full h-10 bg-blue-300 rounded-l-xl flex items-end overflow-hidden">
+          <div className="w-full h-10 bg-blue-300 rounded-l-xl flex justify-end overflow-hidden">
             <div
               className="h-full bg-red-500 transition-all"
               ref={playerRef}
