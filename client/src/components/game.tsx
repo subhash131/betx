@@ -12,7 +12,6 @@ export type Players = {
 };
 
 const ioServer = process.env.NEXT_PUBLIC_SERVER;
-console.log("🚀 ~ ioServer:", ioServer);
 
 export const players: Players = {};
 
@@ -20,6 +19,7 @@ const Game = () => {
   const [walletAddress, setWalletAddress] = useState<string>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { publicKey, connected } = useWallet();
+
   const newSocket = useMemo(
     () => io(ioServer || "https://betx.onrender.com"),
     [publicKey]
@@ -29,7 +29,7 @@ const Game = () => {
     if (!connected && walletAddress) {
       newSocket.emit("walletDisconnect", walletAddress);
     } else {
-      newSocket.emit("walletDisconnect", walletAddress);
+      newSocket.emit("walletConnect", walletAddress);
     }
     return () => {
       newSocket.emit("walletDisconnect", walletAddress);
@@ -52,10 +52,10 @@ const Game = () => {
     }
 
     newSocket.emit("walletConnect", walletAddress);
-    console.log("🚀 ~ useEffect ~ walletAddress:", walletAddress);
+    // console.log("🚀 ~ useEffect ~ walletAddress:", walletAddress);
 
     newSocket.on("updatePlayers", (_players) => {
-      console.log("🚀 ~ newSocket.on ~ _players:", _players);
+      // console.log("🚀 ~ newSocket.on ~ _players:", _players);
       //add backend players to frontend
       const fifteenPercentOfInnerWidth = window.innerWidth * 0.15 * dpr;
       const eightyFivePercentOfInnerWidth = window.innerWidth * 0.85 * dpr;
@@ -161,8 +161,30 @@ const Game = () => {
       if (canvas && ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        let player: Sprite | null = null;
+        let enemy: Sprite | null = null;
         for (let i in players) {
           players[i].update();
+          if (i == walletAddress) {
+            player = players[i];
+          } else {
+            enemy = players[i];
+          }
+
+          // detect attack
+          if (enemy && player) {
+            const attack: boolean =
+              player.attackBox.position.x + player.attackBox.width >=
+                enemy.position.x &&
+              player.attackBox.position.x <= enemy.position.x + enemy.width &&
+              player.attackBox.position.y + player.attackBox.height >=
+                enemy.position.y &&
+              player.attackBox.position.y <= enemy.position.y + enemy.height;
+
+            if (attack) {
+              console.log("attack");
+            }
+          }
         }
       }
       animateFrame = requestAnimationFrame(animate);
@@ -173,7 +195,7 @@ const Game = () => {
     return () => {
       cancelAnimationFrame(animateFrame);
     };
-  }, []);
+  }, [walletAddress]);
 
   return (
     <div className="w-screen h-screen overflow- relative">
