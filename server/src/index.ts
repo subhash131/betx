@@ -34,9 +34,18 @@ io.on("connection", (socket) => {
       players[wallet] = {
         velocity: { x: 0, y: 0 },
         isAttacking: false,
+        health: 100,
       };
       io.emit("updatePlayers", players);
     }
+  });
+
+  socket.on("attack", (wallet) => {
+    if (players[wallet].health > 0) {
+      players[wallet].health -= 1;
+      io.emit("updatePlayers", players);
+    }
+    console.log(players);
   });
 
   socket.on("keydown", (player) => {

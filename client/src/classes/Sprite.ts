@@ -88,21 +88,24 @@ export class Sprite {
   update() {
     this.draw();
     if (this.position.y < 0) {
-      this.position.y += 1;
+      this.position.y += 10;
     } else {
       this.position.y += this.velocity.y;
     }
     if (this.position.x < 0) {
       this.position.x += 1;
+      this.velocity.x = 0;
     } else {
       this.position.x += this.velocity.x;
     }
     if (this.position.y + this.height >= this.canvas.height - 200) {
       this.velocity.y = 0;
+      this.position.y -= 1;
     } else {
       this.velocity.y += Sprite.gravity;
     }
     if (this.position.x + this.width >= this.canvas.width) {
+      this.position.x = this.canvas.width - this.width - 10;
       this.velocity.x = 0;
     }
   }
