@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { io } from "socket.io-client";
 import WalletButton from "./wallet-button";
 import { socket } from "@/socket";
+import { Background } from "@/classes/Background";
 
 export type Players = {
   [playerId: string]: Fighter;
@@ -57,8 +58,8 @@ const Game = () => {
 
     newSocket.on("updatePlayers", (_players) => {
       //add backend players to frontend
-      const fifteenPercentOfInnerWidth = window.innerWidth * 0.15 * dpr;
-      const eightyFivePercentOfInnerWidth = window.innerWidth * 0.85 * dpr;
+      const fifteenPercentOfInnerWidth = window.innerWidth * 0.25 * dpr;
+      const eightyFivePercentOfInnerWidth = window.innerWidth * 0.75 * dpr;
       for (const key in _players) {
         if (!players[key]) {
           players[key] = new Fighter({
@@ -74,6 +75,16 @@ const Game = () => {
             dpr,
             color: key == walletAddress ? "blue" : "red",
             isEnemy: key == walletAddress,
+            imageSrc:
+              key == walletAddress
+                ? "/samuraiMack/Idle.png"
+                : "/kenji/Idle.png",
+            framesMax: key == walletAddress ? 8 : 4,
+            scale: 5,
+            imageOffset: {
+              x: 500,
+              y: 500,
+            },
           });
         } else {
           players[key].velocity.x =
@@ -84,12 +95,12 @@ const Game = () => {
           if (_players[key].isAttacking) {
             players[key].attack();
           }
-          if (enemyRef.current && playerRef.current) {
-            if (key === walletAddress) {
-              playerRef.current.style.width = `${_players[key].health}%`;
-            } else {
-              enemyRef.current.style.width = `${_players[key].health}%`;
-            }
+        }
+        if (enemyRef.current && playerRef.current) {
+          if (key === walletAddress) {
+            playerRef.current.style.width = `${_players[key].health}%`;
+          } else {
+            enemyRef.current.style.width = `${_players[key].health}%`;
           }
         }
       }
@@ -174,9 +185,17 @@ const Game = () => {
     let enemy: Fighter | null = null;
     let enemyId: string | null = null;
 
+    const bg = new Background({
+      canvas,
+      ctx,
+      imageSrc: "/bg.jpg",
+      position: { x: 0, y: 0 },
+    });
+
     function animate() {
       if (canvas && ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bg.update();
         for (let i in players) {
           players[i].update();
           if (i == walletAddress) {
@@ -218,25 +237,24 @@ const Game = () => {
     <div className="w-screen h-screen overflow- relative">
       <div className="absolute top-0 w-screen h-screen bg-transparent flex overflow-hidden flex-col justify-between">
         <div className="size-full h-24 flex items-center justify-between py-4 px-10">
-          <div className="w-full h-10 bg-blue-300 rounded-l-xl flex justify-end overflow-hidden">
+          <div className="w-full h-10 bg-transparent rounded-l-xl flex justify-end overflow-hidden">
             <div
-              className="h-full bg-red-500 transition-all"
+              className="h-full bg-red-500 transition-all rounded-l-xl"
               ref={playerRef}
             ></div>
           </div>
-          <div className="w-40 flex-shrink-0 h-full bg-green-300 shadow-lg rounded-md "></div>
-          <div className="w-full h-10 bg-blue-300 rounded-r-xl flex items-start overflow-hidden">
+          <div className="w-fit flex-shrink-0 h-full rounded-md flex items-center justify-center">
+            <WalletButton />
+          </div>
+          <div className="w-full h-10 bg-transparent rounded-r-xl flex items-start overflow-hidden">
             <div
-              className="h-full bg-red-500 transition-all"
+              className="h-full bg-red-500 transition-all rounded-r-xl"
               ref={enemyRef}
             ></div>
           </div>
         </div>
-        <div className="absolute bottom-48">
-          <WalletButton />
-        </div>
       </div>
-      <canvas ref={canvasRef} className="size-full" />
+      <canvas ref={canvasRef} className="size-full bg-black" />
     </div>
   );
 };
