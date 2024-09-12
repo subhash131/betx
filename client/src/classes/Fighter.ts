@@ -1,6 +1,6 @@
 import { Position, Velocity } from "./types";
 
-type SpriteConstructor = {
+type FighterConstructor = {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
   position: Position;
@@ -12,7 +12,7 @@ type SpriteConstructor = {
   isEnemy: boolean;
 };
 
-export class Sprite {
+export class Fighter {
   static gravity = 0.7;
   ctx: CanvasRenderingContext2D;
   position: Position;
@@ -38,7 +38,7 @@ export class Sprite {
     dpr = 1,
     color = "red",
     isEnemy,
-  }: SpriteConstructor) {
+  }: FighterConstructor) {
     this.position = position;
     this.canvas = canvas;
     this.velocity = velocity;
@@ -102,7 +102,7 @@ export class Sprite {
       this.velocity.y = 0;
       this.position.y -= 1;
     } else {
-      this.velocity.y += Sprite.gravity;
+      this.velocity.y += Fighter.gravity;
     }
     if (this.position.x + this.width >= this.canvas.width) {
       this.position.x = this.canvas.width - this.width - 10;

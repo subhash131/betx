@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Sprite } from "@/classes/Sprite";
+import { Fighter } from "@/classes/Fighter";
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { io } from "socket.io-client";
@@ -8,7 +8,7 @@ import WalletButton from "./wallet-button";
 import { socket } from "@/socket";
 
 export type Players = {
-  [playerId: string]: Sprite;
+  [playerId: string]: Fighter;
 };
 
 const ioServer = process.env.NEXT_PUBLIC_SERVER;
@@ -61,7 +61,7 @@ const Game = () => {
       const eightyFivePercentOfInnerWidth = window.innerWidth * 0.85 * dpr;
       for (const key in _players) {
         if (!players[key]) {
-          players[key] = new Sprite({
+          players[key] = new Fighter({
             canvas,
             ctx,
             position: {
@@ -170,8 +170,8 @@ const Game = () => {
     }
     if (!ctx || !canvas) return;
 
-    let player: Sprite | null = null;
-    let enemy: Sprite | null = null;
+    let player: Fighter | null = null;
+    let enemy: Fighter | null = null;
     let enemyId: string | null = null;
 
     function animate() {
