@@ -11,7 +11,15 @@ const WalletButton = () => {
 
   if (!mounted) return null;
 
-  return <WalletMultiButton style={{ backgroundColor: "#3b82f6" }} />;
+  return (
+    <WalletMultiButton
+      style={{
+        backgroundColor: "#3b82f6",
+        width: "100%",
+        height: "100%",
+      }}
+    />
+  );
 };
 
 export default WalletButton;
