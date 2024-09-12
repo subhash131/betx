@@ -10,6 +10,10 @@ type FighterConstructor = {
   dpr?: number;
   color?: string;
   isEnemy: boolean;
+  imageSrc: string;
+  framesMax: number;
+  scale: number;
+  imageOffset: { x: number; y: number };
 };
 
 export class Fighter {
@@ -28,6 +32,15 @@ export class Fighter {
     height: number;
   };
   isEnemy: boolean = false;
+  image: HTMLImageElement;
+  framesCurrent = 0;
+  framesElapsed = 0;
+  frameHold = 10;
+  framesMax: number;
+  scale: number;
+  imageSrc: string;
+  imageOffset: { x: number; y: number };
+
   constructor({
     position,
     ctx,
@@ -38,11 +51,15 @@ export class Fighter {
     dpr = 1,
     color = "red",
     isEnemy,
+    imageSrc,
+    framesMax,
+    scale = 1,
+    imageOffset,
   }: FighterConstructor) {
     this.position = position;
     this.canvas = canvas;
-    this.velocity = velocity;
     this.ctx = ctx;
+    this.velocity = velocity;
     this.height = height * dpr;
     this.width = width * dpr;
     this.color = color;
@@ -52,6 +69,15 @@ export class Fighter {
       width: this.width * 2.2,
     };
     this.isEnemy = isEnemy;
+    this.framesMax = framesMax;
+    this.scale = scale;
+    this.imageOffset = imageOffset;
+    this.imageSrc = imageSrc;
+    this.image = new Image();
+    this.image.src = imageSrc;
+    this.image.onload = () => {
+      this.update(); // Start drawing once the image has loaded
+    };
   }
 
   attack() {
@@ -62,31 +88,34 @@ export class Fighter {
   }
 
   draw() {
-    // player
-    this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
+    this.ctx.drawImage(
+      this.image,
+      this.framesCurrent * (this.image.width / this.framesMax),
+      0,
+      this.image.width / this.framesMax,
+      this.image.height,
+      this.position.x - this.imageOffset.x,
+      this.position.y - this.imageOffset.y,
+      (this.image.width / this.framesMax) * this.scale,
+      this.image.height * this.scale
     );
+  }
 
-    //attack box
-    if (this.isAttacking) {
-      this.ctx.fillStyle = "green";
-      this.ctx.fillRect(
-        this.isEnemy
-          ? this.attackBox.position.x
-          : this.attackBox.position.x - this.attackBox.width + this.width,
-        this.attackBox.position.y,
-        this.attackBox.width,
-        this.attackBox.height
-      );
+  animateFrames() {
+    this.framesElapsed++;
+    if (this.framesElapsed % this.frameHold === 0) {
+      if (this.framesCurrent < this.framesMax - 1) {
+        this.framesCurrent++;
+      } else {
+        this.framesCurrent = 0;
+      }
     }
   }
 
   update() {
     this.draw();
+    this.animateFrames();
+
     if (this.position.y < 0) {
       this.position.y += 10;
     } else {
