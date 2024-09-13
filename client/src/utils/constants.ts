@@ -29,6 +29,10 @@ export const samuraiSPrites = {
     imageSrc: "/samuraiMack/TakeHitWhite.png",
     framesMax: 4,
   },
+  death: {
+    imageSrc: "/samuraiMack/Death.png",
+    framesMax: 6,
+  },
 };
 export const kenjiSPrites = {
   idle: {
@@ -50,5 +54,9 @@ export const kenjiSPrites = {
   takeHit: {
     imageSrc: "/kenji/TakeHit.png",
     framesMax: 3,
+  },
+  death: {
+    imageSrc: "/kenji/Death.png",
+    framesMax: 7,
   },
 };

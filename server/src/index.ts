@@ -47,9 +47,14 @@ io.on("connection", (socket) => {
       players[wallet].action = "TAKE_HIT";
       io.emit("updatePlayers", players);
       setTimeout(() => {
-        players[wallet].action = "IDLE";
-        io.emit("updatePlayers", players);
+        if (players[wallet].health > 0) {
+          players[wallet].action = "IDLE";
+          io.emit("updatePlayers", players);
+        }
       }, 250);
+    } else {
+      players[wallet].action = "DEATH";
+      io.emit("updatePlayers", players);
     }
     console.log(players);
   });
@@ -58,6 +63,9 @@ io.on("connection", (socket) => {
     console.log("keydown", player.key);
     if (!player.player) {
       console.log("player not found");
+      return;
+    } else if (players[player.player].health <= 0) {
+      console.log("player is dead");
       return;
     }
     switch (player.key) {
@@ -85,22 +93,28 @@ io.on("connection", (socket) => {
     if (!player.player) {
       console.log("player not found");
       return;
+    } else if (players[player.player].health <= 0) {
+      console.log("player is dead");
+      return;
     }
     switch (player.key) {
       case "a":
         players[player.player].velocity.x = 0;
+        players[player.player].action = "IDLE";
         break;
       case "d":
         players[player.player].velocity.x = 0;
+        players[player.player].action = "IDLE";
         break;
       case "w":
         players[player.player].velocity.y = 0;
+        players[player.player].action = "IDLE";
         break;
       case "space":
+        players[player.player].action = "IDLE";
         players[player.player].isAttacking = false;
         break;
     }
-    players[player.player].action = "IDLE";
     io.emit("updatePlayers", players);
   });
 

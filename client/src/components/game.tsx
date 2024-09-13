@@ -59,8 +59,6 @@ const Game = () => {
 
     newSocket.on("updatePlayers", (_players) => {
       //add backend players to frontend
-      const fifteenPercentOfInnerWidth = window.innerWidth * 0.25 * dpr;
-      const eightyFivePercentOfInnerWidth = window.innerWidth * 0.75 * dpr;
       for (const key in _players) {
         if (!players[key]) {
           if (key == walletAddress) {
@@ -68,12 +66,12 @@ const Game = () => {
               canvas,
               ctx,
               position: {
-                x: fifteenPercentOfInnerWidth,
+                x: innerWidth * 0.25 * dpr,
                 y: 0,
               },
               dpr,
               color: "blue",
-              isEnemy: false,
+              isDead: false,
               imageSrc: "/samuraiMack/Idle.png",
               framesMax: 8,
               scale: 5,
@@ -88,12 +86,12 @@ const Game = () => {
               canvas,
               ctx,
               position: {
-                x: eightyFivePercentOfInnerWidth,
+                x: innerWidth * 0.75 * dpr,
                 y: 0,
               },
               dpr,
               color: "red",
-              isEnemy: false,
+              isDead: false,
               imageSrc: "/kenji/Idle.png",
               framesMax: 4,
               scale: 5,
@@ -138,6 +136,20 @@ const Game = () => {
             case "TAKE_HIT":
               players[key].image = players[key].sprites.takeHit.image!;
               players[key].framesMax = players[key].sprites.takeHit.framesMax;
+              break;
+            case "DEATH":
+              players[key].image = players[key].sprites.death.image!;
+              players[key].framesMax = players[key].sprites.death.framesMax;
+              players[key].frameHold = 20;
+              let timeout;
+              if (!timeout) {
+                timeout = setTimeout(
+                  () => {
+                    players[key].isDead = true;
+                  },
+                  walletAddress == key ? 935 : 938
+                );
+              }
               break;
           }
         }
@@ -263,16 +275,14 @@ const Game = () => {
             if (attack) {
               player.isAttacking = false;
               socket.emit("attack", enemyId);
-              console.log("hit");
             }
           }
         }
       }
+
       animateFrame = requestAnimationFrame(animate);
     }
-
     animate();
-
     return () => {
       cancelAnimationFrame(animateFrame);
     };

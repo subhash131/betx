@@ -9,7 +9,7 @@ type FighterConstructor = {
   height?: number;
   dpr?: number;
   color?: string;
-  isEnemy: boolean;
+  isDead: boolean;
   imageSrc: string;
   framesMax: number;
   scale: number;
@@ -38,7 +38,7 @@ export class Fighter {
     width: number;
     height: number;
   };
-  isEnemy: boolean = false;
+  isDead: boolean = false;
   image: HTMLImageElement;
   framesCurrent = 0;
   framesElapsed = 0;
@@ -64,7 +64,7 @@ export class Fighter {
     width = 50,
     dpr = 1,
     color = "red",
-    isEnemy,
+    isDead,
     imageSrc,
     framesMax,
     scale = 1,
@@ -83,7 +83,7 @@ export class Fighter {
       height: this.height / 3,
       width: this.width * 2.2,
     };
-    this.isEnemy = isEnemy;
+    this.isDead = isDead;
     this.framesMax = framesMax;
     this.scale = scale;
     this.imageOffset = imageOffset;
@@ -135,7 +135,9 @@ export class Fighter {
 
   update() {
     this.draw();
-    this.animateFrames();
+    if (!this.isDead) {
+      this.animateFrames();
+    }
 
     if (this.position.y < 0) {
       this.position.y += 10;
