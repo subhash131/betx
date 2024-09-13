@@ -26,10 +26,10 @@ const Game = () => {
   const { publicKey, connected } = useWallet();
 
   const newSocket = useMemo(
-    () => io(/*todo: ioServer ||*/ "https://betx.onrender.com"),
+    () => io(ioServer || "https://betx.onrender.com"),
     [publicKey]
   );
-
+    
   useEffect(() => {
     if (!connected && walletAddress) {
       newSocket.emit("walletDisconnect", walletAddress);
