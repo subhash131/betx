@@ -94,6 +94,7 @@ io.on("connection", (socket) => {
         break;
     }
     io.emit("updatePlayers", players);
+    console.log("keydown: current players ::", players);
   });
 
   socket.on("keyup", (player) => {
@@ -127,6 +128,7 @@ io.on("connection", (socket) => {
         break;
     }
     io.emit("updatePlayers", players);
+    console.log("keyup: current players ::", players);
   });
 
   socket.on("walletDisconnect", (wallet) => {
