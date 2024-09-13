@@ -1,13 +1,13 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Fighter } from "@/classes/Fighter";
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { io } from "socket.io-client";
 import WalletButton from "./wallet-button";
-import { socket } from "@/socket";
 import { Background } from "@/classes/Background";
 import { kenjiSPrites, samuraiSPrites } from "@/utils/constants";
+import { Socket } from "socket.io-client";
 
 export type Players = {
   [playerId: string]: Fighter;
@@ -20,24 +20,30 @@ export const players: Players = {};
 
 const Game = () => {
   const [walletAddress, setWalletAddress] = useState<string>();
+  const [socket, setSocket] = useState<Socket>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const enemyRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const { publicKey, connected } = useWallet();
 
-  const newSocket = useMemo(
+  const newSocket = useCallback(
     () => io(ioServer || "https://betx.onrender.com"),
-    [publicKey]
+    []
   );
+  useEffect(() => {
+    const soc = newSocket();
+    setSocket(soc);
+  }, []);
 
   useEffect(() => {
+    if (!socket) return;
     if (!connected && walletAddress) {
-      newSocket.emit("walletDisconnect", walletAddress);
+      socket.emit("walletDisconnect", walletAddress);
     } else {
-      newSocket.emit("walletConnect", walletAddress);
+      socket.emit("walletConnect", walletAddress);
     }
     return () => {
-      newSocket.emit("walletDisconnect", walletAddress);
+      socket.emit("walletDisconnect", walletAddress);
     };
   }, [connected]);
 
@@ -55,10 +61,13 @@ const Game = () => {
     if (!walletAddress) {
       return;
     }
+    if (!socket) {
+      return;
+    }
 
-    newSocket.emit("walletConnect", walletAddress);
+    socket.emit("walletConnect", walletAddress);
 
-    newSocket.on("updatePlayers", (_players) => {
+    socket.on("updatePlayers", (_players) => {
       //add backend players to frontend
       for (const key in _players) {
         if (!players[key]) {
@@ -170,7 +179,7 @@ const Game = () => {
       }
     });
 
-    newSocket.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason) => {
       if (!walletAddress) return;
       delete players[walletAddress];
       console.log("Disconnected from server, reason:", reason);
@@ -277,7 +286,9 @@ const Game = () => {
               player.isAttacking;
             if (attack) {
               player.isAttacking = false;
-              socket.emit("attack", enemyId);
+              if (socket) {
+                socket.emit("attack", enemyId);
+              }
             }
           }
         }
@@ -301,16 +312,8 @@ const Game = () => {
               ref={playerRef}
             ></div>
           </div>
-          <div className="w-fit flex-shrink-0 h-full rounded-md flex items-center justify-center gap-2">
+          <div className="w-fit flex-shrink-0 h-full rounded-md flex items-center justify-center">
             <WalletButton />
-            <button
-              className="text-white bg-black p-2 rounded-lg"
-              onClick={() => {
-                socket.emit("test", "delete after testing");
-              }}
-            >
-              Test
-            </button>
           </div>
           <div className="w-full h-10 bg-transparent rounded-r-xl flex items-start overflow-hidden">
             <div
@@ -319,6 +322,14 @@ const Game = () => {
             ></div>
           </div>
         </div>
+        <button
+          className=""
+          onClick={() => {
+            if (socket) socket.emit("test", "delete after testing");
+          }}
+        >
+          test
+        </button>
       </div>
       <canvas ref={canvasRef} className="size-full bg-black" />
     </div>
