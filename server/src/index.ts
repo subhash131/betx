@@ -28,9 +28,17 @@ const players: Players = {};
 io.on("connection", (socket) => {
   console.log(`A user connected with socket ID: ${socket.id}`);
 
+  socket.on("test", (msg) => {
+    console.log("msg ::", msg);
+    console.log("🚀 ~ players:", players);
+  });
   // Initialize player for this connection
   socket.on("walletConnect", (wallet) => {
-    if (!players[wallet] && (wallet != "null" || wallet != "undefined")) {
+    if (
+      wallet &&
+      !players[wallet] &&
+      (wallet != "null" || wallet != "undefined")
+    ) {
       players[wallet] = {
         velocity: { x: 0, y: 0 },
         isAttacking: false,
@@ -42,7 +50,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("attack", (wallet) => {
-    if (wallet == "null" || wallet == "undefined") {
+    if (!wallet || wallet == "null" || wallet == "undefined") {
       return;
     }
     if (players[wallet].health > 0) {
@@ -64,13 +72,6 @@ io.on("connection", (socket) => {
 
   socket.on("keydown", (player) => {
     console.log("keydown", player.key);
-    if (
-      !players[player.player] &&
-      (player.player != "null" || player.player != "undefined")
-    ) {
-      console.log("player not found");
-      return;
-    }
     if (
       !player.player ||
       player.player == "null" ||

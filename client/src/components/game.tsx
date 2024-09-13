@@ -29,7 +29,7 @@ const Game = () => {
     () => io(ioServer || "https://betx.onrender.com"),
     [publicKey]
   );
-    
+
   useEffect(() => {
     if (!connected && walletAddress) {
       newSocket.emit("walletDisconnect", walletAddress);
@@ -301,8 +301,16 @@ const Game = () => {
               ref={playerRef}
             ></div>
           </div>
-          <div className="w-fit flex-shrink-0 h-full rounded-md flex items-center justify-center">
+          <div className="w-fit flex-shrink-0 h-full rounded-md flex items-center justify-center gap-2">
             <WalletButton />
+            <button
+              className="text-white bg-black p-2 rounded-lg"
+              onClick={() => {
+                socket.emit("test", "delete after testing");
+              }}
+            >
+              Test
+            </button>
           </div>
           <div className="w-full h-10 bg-transparent rounded-r-xl flex items-start overflow-hidden">
             <div
