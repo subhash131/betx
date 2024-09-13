@@ -30,7 +30,7 @@ io.on("connection", (socket) => {
 
   // Initialize player for this connection
   socket.on("walletConnect", (wallet) => {
-    if (!players[wallet]) {
+    if (!players[wallet] && (wallet != "null" || wallet != "undefined")) {
       players[wallet] = {
         velocity: { x: 0, y: 0 },
         isAttacking: false,
@@ -42,6 +42,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("attack", (wallet) => {
+    if (wallet == "null" || wallet == "undefined") {
+      return;
+    }
     if (players[wallet].health > 0) {
       players[wallet].health -= 1;
       players[wallet].action = "TAKE_HIT";
@@ -61,7 +64,11 @@ io.on("connection", (socket) => {
 
   socket.on("keydown", (player) => {
     console.log("keydown", player.key);
-    if (!player.player) {
+    if (
+      !player.player ||
+      player.player == "null" ||
+      player.player == "undefined"
+    ) {
       console.log("player not found");
       return;
     } else if (players[player.player].health <= 0) {
@@ -90,7 +97,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("keyup", (player) => {
-    if (!player.player) {
+    if (
+      !player.player ||
+      player.player == "null" ||
+      player.player == "undefined"
+    ) {
       console.log("player not found");
       return;
     } else if (players[player.player].health <= 0) {
