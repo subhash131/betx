@@ -65,6 +65,13 @@ io.on("connection", (socket) => {
   socket.on("keydown", (player) => {
     console.log("keydown", player.key);
     if (
+      !players[player.player] &&
+      (player.player != "null" || player.player != "undefined")
+    ) {
+      console.log("player not found");
+      return;
+    }
+    if (
       !player.player ||
       player.player == "null" ||
       player.player == "undefined"
