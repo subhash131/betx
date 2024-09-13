@@ -14,6 +14,7 @@ export type Players = {
 };
 
 const ioServer = process.env.NEXT_PUBLIC_SERVER;
+console.log("🚀 ~ ioServer:", ioServer);
 
 export const players: Players = {};
 
@@ -25,7 +26,7 @@ const Game = () => {
   const { publicKey, connected } = useWallet();
 
   const newSocket = useMemo(
-    () => io(ioServer || "https://betx.onrender.com"),
+    () => io(/*todo: ioServer ||*/ "https://betx.onrender.com"),
     [publicKey]
   );
 
@@ -195,6 +196,7 @@ const Game = () => {
           socket.emit("keyup", { key: "space", player: walletAddress });
           break;
       }
+      console.log("keyup", e.code);
     };
     const handleKeydown = (e: KeyboardEvent) => {
       switch (e.code) {
@@ -216,6 +218,7 @@ const Game = () => {
           socket.emit("keydown", { key: "space", player: walletAddress });
           break;
       }
+      console.log("keydown", e.code);
     };
 
     document.addEventListener("keydown", handleKeydown);
