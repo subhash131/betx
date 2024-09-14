@@ -1,8 +1,6 @@
 "use client";
-import { RootState } from "@/state-manager/store";
-import { BN } from "@project-serum/anchor";
+
 import { Connection, PublicKey } from "@solana/web3.js";
-import { useSelector } from "react-redux";
 
 export const mockWallet = () => {
   return {};
