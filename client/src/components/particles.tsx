@@ -75,9 +75,9 @@ export const TsParticles = () => {
                 direction: "none",
                 enable: true,
                 outModes: {
-                  default: "bounce",
+                  default: "split",
                 },
-                random: false,
+                random: true,
                 speed: 1,
                 straight: false,
               },
@@ -96,10 +96,10 @@ export const TsParticles = () => {
                 type: ["star"],
               },
               size: {
-                value: { min: 1, max: 5 },
+                value: { min: 1, max: 6 },
               },
             },
-            detectRetina: true,
+            detectRetina: false,
           }}
         />
       )}
