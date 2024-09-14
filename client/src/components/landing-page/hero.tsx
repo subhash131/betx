@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { TsParticles } from "@/components/particles";
+import { TsParticles } from "@/components/landing-page/particles";
 
 const Hero = () => {
   return (

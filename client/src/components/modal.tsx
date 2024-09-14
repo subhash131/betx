@@ -3,7 +3,7 @@ import { toggleModal } from "@/state-manager/features/modal";
 import { RootState } from "@/state-manager/store";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import RegisterForm from "./register-form";
+import RegisterForm from "./landing-page/register-form";
 
 const Modal = () => {
   const { isActive, type } = useSelector(
@@ -22,7 +22,7 @@ const Modal = () => {
     <div
       className={`${
         isActive ? "top-0" : "top-[100vh]"
-      } w-screen h-screen fixed transition-all flex items-center justify-center bg-[rgb(0,0,0,0.7)] duration-300 z-[100] text-white`}
+      } w-screen h-screen fixed transition-all flex items-center justify-center backdrop-blur-sm duration-300 z-[100] text-white`}
       onClick={() => {
         dispatch(toggleModal(null));
       }}

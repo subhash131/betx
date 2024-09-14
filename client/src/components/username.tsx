@@ -5,7 +5,7 @@ import { RootState } from "@/state-manager/store";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import RegisterUser from "./register-button";
+import RegisterUser from "./landing-page/register-button";
 import { useProgram } from "@/hooks/use-program";
 import { AnchorError } from "@project-serum/anchor";
 import { toast } from "sonner";
