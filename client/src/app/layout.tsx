@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import AppProvider from "@/providers/app-provider";
 
 import "./globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import Modal from "@/components/modal";
+import RoomProvider from "@/providers/room-provider";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const poppins = Poppins({
+  weight: ["100", "200", "400", "300", "500"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -30,14 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
-      >
-        <AppProvider>
-          <Toaster />
-          <Modal />
-          {children}
-        </AppProvider>
+      <body className={`${poppins.className}`}>
+        <RoomProvider>
+          <AppProvider>
+            <Toaster />
+            <Modal />
+            {children}
+          </AppProvider>
+        </RoomProvider>
       </body>
     </html>
   );
