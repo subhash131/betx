@@ -57,7 +57,9 @@ const Username = () => {
   return (
     <>
       {username ? (
-        <div className="text-white bg-blue-400 p-2 rounded-md">{username}</div>
+        <div className="text-white bg-black py-3 px-6 rounded-md">
+          {username}
+        </div>
       ) : (
         <RegisterUser />
       )}

@@ -1,8 +1,17 @@
 "use client";
 import React from "react";
 import { TsParticles } from "@/components/landing-page/particles";
+import { useDispatch } from "react-redux";
+import { toggleModal } from "@/state-manager/features/modal";
 
 const Hero = () => {
+  const dispatch = useDispatch();
+  const handleStartGame = () => {
+    dispatch(toggleModal("START_GAME"));
+  };
+  const handleJoinGame = () => {
+    dispatch(toggleModal("JOIN_GAME"));
+  };
   return (
     <div className="w-full h-screen pt-10 flex flex-col items-center justify-center px-40 gap-10 relative pb-12">
       <TsParticles />
@@ -17,10 +26,16 @@ const Hero = () => {
           </h4>
         </div>
         <div className="flex gap-4 font-semibold pb-10">
-          <button className="px-10 shadow-xl py-4 bg-black text-white rounded-full transition-transform hover:scale-95 active:scale-90">
+          <button
+            className="px-10 shadow-xl py-4 bg-black text-white rounded-full transition-transform hover:scale-95 active:scale-90"
+            onClick={handleStartGame}
+          >
             Start Game
           </button>
-          <button className="px-10 py-4 bg-white text-black shadow-xl rounded-full transition-transform hover:scale-95 active:scale-90">
+          <button
+            className="px-10 py-4 bg-white text-black shadow-xl rounded-full transition-transform hover:scale-95 active:scale-90"
+            onClick={handleJoinGame}
+          >
             Join Game
           </button>
         </div>

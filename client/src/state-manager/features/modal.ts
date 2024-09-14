@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type ModalT = {
   isActive: boolean;
-  type: "REGISTER" | null;
+  type: null | "REGISTER" | "START_GAME" | "JOIN_GAME";
 };
 
 const initialState: ModalT = {
