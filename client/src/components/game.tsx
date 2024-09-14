@@ -7,33 +7,21 @@ import { io } from "socket.io-client";
 import WalletButton from "./wallet-button";
 import { Background } from "@/classes/Background";
 import { kenjiSPrites, samuraiSPrites } from "@/utils/constants";
-import { Socket } from "socket.io-client";
+import { useRoom } from "@/providers/room-provider";
 
 export type Players = {
   [playerId: string]: Fighter;
 };
 
-const ioServer = process.env.NEXT_PUBLIC_SERVER;
-console.log("🚀 ~ ioServer:", ioServer);
-
 export const players: Players = {};
 
 const Game = () => {
+  const { socket } = useRoom();
   const [walletAddress, setWalletAddress] = useState<string>();
-  const [socket, setSocket] = useState<Socket>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const enemyRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const { publicKey, connected } = useWallet();
-
-  const newSocket = useCallback(
-    () => io(ioServer || "https://betx.onrender.com"),
-    []
-  );
-  useEffect(() => {
-    const soc = newSocket();
-    setSocket(soc);
-  }, []);
 
   useEffect(() => {
     if (!socket) return;

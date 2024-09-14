@@ -92,7 +92,7 @@ const RegisterForm = () => {
             ref={inputRef}
             type="text"
             placeholder="username..."
-            className="p-2 bg-[#313742] rounded-lg w-full outline-none"
+            className="p-2 px-4 bg-[#313742] rounded-lg w-full outline-none"
             autoFocus
           />
           <button
