@@ -5,7 +5,7 @@ import { RootState } from "@/state-manager/store";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import RegisterUser from "./register-user";
+import RegisterUser from "./register-button";
 import { useProgram } from "@/hooks/use-program";
 import { AnchorError } from "@project-serum/anchor";
 import { toast } from "sonner";
@@ -35,25 +35,25 @@ const Username = () => {
       if (err instanceof AnchorError) {
         toast.error(err.error.errorMessage);
       } else {
-        console.log("🚀 ~ createLobby ~ err:", err);
+        console.log("🚀 ~ username ~ err:", err);
       }
     }
   };
 
   useEffect(() => {
-    if (!wallet) {
+    if (!wallet?.publicKey) {
       console.log("🚀 ~ Username ~ wallet:", wallet);
-      dispatch(setUsername(" "));
+      dispatch(setUsername(""));
     }
-  }, [wallet]);
+  }, [wallet?.publicKey]);
 
   useEffect(() => {
-    if (!userPk) {
-      return;
+    if (wallet?.publicKey) {
+      getUsername();
     }
-    getUsername();
-  }, [userPk]);
+  }, [wallet?.publicKey]);
 
+  if (!wallet?.publicKey) return;
   return (
     <>
       {username ? (
