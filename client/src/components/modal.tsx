@@ -1,9 +1,10 @@
 "use client";
-import { toggleModal } from "@/state-manager/features/modal";
 import { RootState } from "@/state-manager/store";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RegisterForm from "./landing-page/register-form";
+import StartGame from "./landing-page/start-game";
+import JoinGame from "./landing-page/join-game";
 
 const Modal = () => {
   const { isActive, type } = useSelector(
@@ -15,6 +16,10 @@ const Modal = () => {
     switch (type) {
       case "REGISTER":
         return <RegisterForm />;
+      case "START_GAME":
+        return <StartGame />;
+      case "JOIN_GAME":
+        return <JoinGame />;
     }
   };
 
@@ -23,9 +28,6 @@ const Modal = () => {
       className={`${
         isActive ? "top-0" : "top-[100vh]"
       } w-screen h-screen fixed transition-all flex items-center justify-center backdrop-blur-sm duration-300 z-[100] text-white`}
-      onClick={() => {
-        dispatch(toggleModal(null));
-      }}
     >
       {getContent()}
     </div>
