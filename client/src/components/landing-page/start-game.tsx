@@ -1,6 +1,6 @@
 "use client";
 import { toggleModal } from "@/state-manager/features/modal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { useMasterPublickey } from "@/hooks/use-master-publickey";
@@ -72,7 +72,6 @@ const StartGame = () => {
 
     if (!lastLobbyId) {
       await getMaster();
-      return;
     }
 
     const lobbyPk = useLobbyPublicKey(Number(lastLobbyId) + 1);
@@ -110,6 +109,10 @@ const StartGame = () => {
       }
     }
   };
+
+  useEffect(() => {
+    getMaster();
+  }, [program]);
 
   return (
     <div
