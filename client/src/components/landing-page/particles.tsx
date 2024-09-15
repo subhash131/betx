@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
-import type { Container } from "@tsparticles/engine";
 import { loadFull } from "tsparticles";
 
 export const TsParticles = () => {
@@ -16,10 +15,6 @@ export const TsParticles = () => {
     });
   }, []);
 
-  const particlesLoaded = async (container?: Container) => {
-    console.log(container);
-  };
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -31,7 +26,6 @@ export const TsParticles = () => {
       {init && (
         <Particles
           id="tsparticles"
-          particlesLoaded={particlesLoaded}
           options={{
             background: {
               color: {
