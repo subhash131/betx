@@ -53,7 +53,6 @@ const RegisterForm = () => {
         .rpc();
       console.log(res);
       if (res) {
-        setLoading(false);
         toast.success("Registered successfully");
         dispatch(toggleModal(null));
       }
@@ -66,6 +65,7 @@ const RegisterForm = () => {
         console.log("🚀 ~ createLobby ~ err:", err);
       }
     }
+    setLoading(false);
   };
   return (
     <div
@@ -96,7 +96,7 @@ const RegisterForm = () => {
             autoFocus
           />
           <button
-            className="bg-white px-6 py-2 rounded-lg text-black w-fit hover:scale-95 active:scale-90 transition-transform disabled:bg-gray-300"
+            className="bg-white px-6 py-2 rounded-lg text-black w-fit hover:scale-95 active:scale-90 transition-transform disabled:bg-gray-300 disabled:scale-100"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
