@@ -25,7 +25,7 @@ const Hero = () => {
             everywhere.
           </h4>
         </div>
-        <div className="flex gap-4 font-semibold pb-10">
+        <div className="flex gap-4 font-semibold pb-4">
           <button
             className="px-10 shadow-xl py-4 bg-black text-white rounded-full transition-transform hover:scale-95 active:scale-90"
             onClick={handleStartGame}
