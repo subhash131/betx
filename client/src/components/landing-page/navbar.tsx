@@ -11,7 +11,7 @@ const Navbar = () => {
         <div className="size-5 rounded-full bg-black" />
         <h1 className="font-bold text-xl">BetX</h1>
       </div>
-      <ul className="w-full flex list-none gap-8 items-center justify-center h-full">
+      <ul className="w-full flex list-none gap-8 items-center justify-center h-full max-md:invisible">
         <li>Home</li>
         <li>Deck</li>
         <li>About</li>
