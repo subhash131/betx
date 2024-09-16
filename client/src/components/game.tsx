@@ -33,7 +33,7 @@ const Game = () => {
     return () => {
       socket.emit("walletDisconnect", walletAddress);
     };
-  }, [connected]);
+  }, [connected, walletAddress]);
 
   // Manage players
   useEffect(() => {
