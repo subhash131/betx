@@ -49,8 +49,14 @@ io.on("connection", (socket) => {
       playerTwoUsername: data.username,
     };
     io.emit("updatedLobby", lobby);
+    if (
+      lobby[data.id].playerOneBetPlaced &&
+      lobby[data.id].playerTwoBetPlaced
+    ) {
+      io.emit("navigate-game", data.id);
+    }
   });
-  
+
   socket.on("place-bet", (data) => {
     if (lobby[data.id].playerOneId === data.player) {
       lobby[data.id] = {
