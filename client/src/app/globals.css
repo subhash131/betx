@@ -10,3 +10,7 @@
 .wallet-adapter-modal-wrapper {
   background-color: black;
 }
+
+.wallet-adapter-button {
+  text-wrap: nowrap;
+}
