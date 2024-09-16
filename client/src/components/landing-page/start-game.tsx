@@ -2,10 +2,9 @@
 import { toggleModal } from "@/state-manager/features/modal";
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMasterPublickey } from "@/hooks/use-master-publickey";
 import { useProgram } from "@/hooks/use-program";
-import { useUserPublickey } from "@/hooks/use-user-publickey";
 import { AnchorError, BN } from "@project-serum/anchor";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
@@ -20,19 +19,25 @@ import { useLobbyPublicKey } from "@/hooks/use-lobby-publickey";
 import { solToLamports } from "@/utils/helpers";
 import { MasterT } from "@/state-manager/features/master";
 import { BsCopy } from "react-icons/bs";
+import { useRoom } from "@/providers/room-provider";
+import { RootState } from "@/state-manager/store";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { updateLobbyId } from "@/state-manager/features/lobby";
 
 const StartGame = () => {
+  const { socket } = useRoom();
   const [lastLobbyId, setLastLobbyId] = useState<string>();
   const [betAmount, setBetAmount] = useState<"5" | "1">("1");
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
   const program = useProgram(connection, wallet);
-  const user = useUserPublickey(wallet?.publicKey);
   const masterPk = useMasterPublickey();
   const [loading, setLoading] = useState(false);
   const [lobbyCreated, setLobbyCreate] = useState<boolean>(false);
   const [currentLobbyId, setCurrentLobbyId] = useState<PublicKey>();
   const [lobbyIdCopied, setLobbyIdCopied] = useState<boolean>(false);
+
+  const { username } = useSelector((state: RootState) => state.UserReducer);
 
   const dispatch = useDispatch();
   const closeModal = () => {
@@ -91,7 +96,14 @@ const StartGame = () => {
         .rpc();
 
       if (res) {
-        console.log(res);
+        socket?.emit("start-game", {
+          id: lobbyPk,
+          betAmount,
+          playerOneId: wallet.publicKey.toString(),
+          playerOneUsername: username,
+        });
+        dispatch(updateLobbyId(lobbyPk.toString()));
+        console.log("🚀 ~ createLobby ~ res:", res);
         toast.success("Lobby created, waiting for others to join");
         setLobbyCreate(true);
         setLoading(false);
@@ -116,7 +128,7 @@ const StartGame = () => {
 
   return (
     <div
-      className="w-96 h-80 rounded-xl bg-[#181818] overflow-hidden relative"
+      className="w-96 h-fit rounded-xl bg-[#181818] overflow-hidden relative"
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -132,8 +144,8 @@ const StartGame = () => {
           />
         </button>
       </div>
-      <form className="size-full flex items-center  flex-col gap-4">
-        <h3 className="text-xl font-semibold pt-16">Start Game</h3>
+      <form className="size-full flex items-center  flex-col gap-4 py-16">
+        <h3 className="text-xl font-semibold">Start Game</h3>
         <div className="w-full flex flex-col items-center justify-center gap-4 px-10">
           <h4 className="font-semibold">
             {lobbyCreated ? "Bet amount" : "Select bet amount"}
@@ -175,7 +187,7 @@ const StartGame = () => {
               <p className="text-xs">Share Lobby ID</p>
               <div className="flex gap-2">
                 <div className="px-4 py-2 border rounded-lg">
-                  {currentLobbyId.toString().substring(0, 4)}
+                  {currentLobbyId.toString().substring(0, 14)}
                   ....
                   {currentLobbyId
                     .toString()
@@ -199,12 +211,25 @@ const StartGame = () => {
           ) : (
             <button
               type="button"
-              className="bg-white px-6 text-xs font-semibold py-2 rounded-lg text-black w-fit hover:scale-95 active:scale-90 transition-transform disabled:bg-gray-300 disabled:scale-100"
+              className="bg-white px-6 text-xs font-semibold py-2 rounded-lg text-black w-fit hover:scale-95 active:scale-90 transition-transform disabled:bg-gray-200 disabled:scale-100"
               onClick={createLobby}
               disabled={loading}
             >
-              Confirm
+              {loading ? (
+                <AiOutlineLoading3Quarters className="animate-spin" />
+              ) : (
+                "Confirm"
+              )}
             </button>
+          )}
+          {lobbyCreated && (
+            <div className="font-semibold flex flex-col gap-2 mt-4">
+              <h6>Waiting for Players join..!</h6>
+              <div className="h-fit py-2 px-4 rounded-lg flex-col bg-[#282828] w-full flex items-start justify-center">
+                <p>name</p>
+                <p className="text-xs">asnamxksm</p>
+              </div>
+            </div>
           )}
         </div>
       </form>
