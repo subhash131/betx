@@ -8,6 +8,7 @@ import {
   updatePlayerTwoPlacedBet,
   updatePlayerTwoUsername,
 } from "@/state-manager/features/lobby";
+import { useRouter } from "next/navigation";
 import React, {
   createContext,
   useCallback,
@@ -31,6 +32,7 @@ export const useRoom = () => useContext(Room);
 const RoomProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket>();
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const newSocket = useCallback(
     () => io(ioServer || "https://betx.onrender.com"),
@@ -61,7 +63,11 @@ const RoomProvider = ({ children }: { children: React.ReactNode }) => {
         dispatch(updatePlayerTwoPlacedBet(data.playerTwoBetPlaced));
       }
     });
+    socket?.on("navigate-game", (id) => {
+      router.push(`/game/${id}`);
+    });
   }, [socket]);
+
   return <Room.Provider value={{ socket }}>{children}</Room.Provider>;
 };
 
