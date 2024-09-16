@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import * as http from "http";
 import { Server } from "socket.io";
-import { Players } from "./types";
+import { Lobby, Players } from "./types";
 
 const app = express();
 const server = http.createServer(app);
@@ -22,16 +22,49 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello, TypeScript Express!");
 });
 
+const lobby: Lobby = {};
+
 // Initialize players object
 const players: Players = {};
 
 io.on("connection", (socket) => {
   console.log(`A user connected with socket ID: ${socket.id}`);
 
-  socket.on("test", (msg) => {
-    console.log("msg ::", msg);
-    console.log("🚀 ~ players:", players);
+  socket.on("start-game", (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
+    lobby[data.id] = {
+      playerOneBetPlaced: false,
+      playerOneId: data.playerOneId,
+      playerOneUsername: data.playerOneUsername,
+      betAmount: data.betAmount,
+    };
+    console.log("🚀 ~ socket.on ~ lobby:", lobby);
+    io.emit("updatedLobby", lobby);
   });
+
+  socket.on("join-game", (data) => {
+    lobby[data.id] = {
+      playerTwoBetPlaced: false,
+      playerTwoId: data.player,
+      playerTwoUsername: data.username,
+    };
+    io.emit("updatedLobby", lobby);
+  });
+  
+  socket.on("place-bet", (data) => {
+    if (lobby[data.id].playerOneId === data.player) {
+      lobby[data.id] = {
+        playerOneBetPlaced: true,
+      };
+    }
+    if (lobby[data.id].playerTwoId === data.player) {
+      lobby[data.id] = {
+        playerOneBetPlaced: true,
+      };
+    }
+    io.emit("updatedLobby", lobby);
+  });
+
   // Initialize player for this connection
   socket.on("walletConnect", (wallet) => {
     if (
