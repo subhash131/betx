@@ -1,15 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { PublicKey } from "@solana/web3.js";
 
 type LobbyT = {
   lobbyId?: string;
-  playerOne?: PublicKey;
-  playerTwo?: PublicKey;
   betAmount: number;
-  playerOnePlacedBet: boolean;
-  playerTwoPlacedBet: boolean;
-  winner?: PublicKey;
   isActive: boolean;
+  playerOneId?: string;
+  playerOnePlacedBet: boolean;
+  playerOneUsername?: string;
+  playerTwoId?: string;
+  playerTwoPlacedBet: boolean;
+  playerTwoUsername?: string;
+  winner?: string;
 };
 
 const initialState: LobbyT = {
@@ -26,11 +27,11 @@ const lobby = createSlice({
     updateLobbyId: create.reducer<string | undefined>((state, action) => {
       state.lobbyId = action.payload;
     }),
-    updatePlayerOne: create.reducer<PublicKey>((state, action) => {
-      state.playerOne = action.payload;
+    updatePlayerOneId: create.reducer<string>((state, action) => {
+      state.playerOneId = action.payload;
     }),
-    updatePlayerTwo: create.reducer<PublicKey>((state, action) => {
-      state.playerTwo = action.payload;
+    updatePlayerTwoId: create.reducer<string>((state, action) => {
+      state.playerOneId = action.payload;
     }),
     updateBetAmount: create.reducer<number>((state, action) => {
       state.betAmount = action.payload;
@@ -38,7 +39,7 @@ const lobby = createSlice({
     updateIsActive: create.reducer<boolean>((state, action) => {
       state.isActive = action.payload;
     }),
-    updateWinner: create.reducer<PublicKey>((state, action) => {
+    updateWinner: create.reducer<string>((state, action) => {
       state.winner = action.payload;
     }),
     updatePlayerOnePlacedBet: create.reducer<boolean>((state, action) => {
@@ -47,6 +48,32 @@ const lobby = createSlice({
     updatePlayerTwoPlacedBet: create.reducer<boolean>((state, action) => {
       state.playerTwoPlacedBet = action.payload;
     }),
+    updatePlayerOne: create.reducer<{
+      betAmount: number;
+      username: string;
+      walletAddress: string;
+    }>((state, action) => {
+      state.playerOneId = action.payload.walletAddress;
+      state.playerOneUsername = action.payload.username;
+    }),
+    updatePlayerTwo: create.reducer<{
+      betAmount: number;
+      username: string;
+      walletAddress: string;
+    }>((state, action) => {
+      state.playerTwoId = action.payload.walletAddress;
+      state.playerTwoUsername = action.payload.username;
+    }),
+    updatePlayerOneUsername: create.reducer<{
+      username: string;
+    }>((state, action) => {
+      state.playerOneUsername = action.payload.username;
+    }),
+    updatePlayerTwoUsername: create.reducer<{
+      username: string;
+    }>((state, action) => {
+      state.playerTwoUsername = action.payload.username;
+    }),
   }),
 });
 
@@ -54,10 +81,14 @@ export const {
   updateLobbyId,
   updateBetAmount,
   updateIsActive,
-  updatePlayerOne,
+  updatePlayerOneId,
   updatePlayerOnePlacedBet,
-  updatePlayerTwo,
+  updatePlayerTwoId,
   updatePlayerTwoPlacedBet,
   updateWinner,
+  updatePlayerOne,
+  updatePlayerTwo,
+  updatePlayerOneUsername,
+  updatePlayerTwoUsername,
 } = lobby.actions;
 export default lobby.reducer;
