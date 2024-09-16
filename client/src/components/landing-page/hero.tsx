@@ -13,11 +13,11 @@ const Hero = () => {
     dispatch(toggleModal("JOIN_GAME"));
   };
   return (
-    <div className="w-full h-screen pt-10 flex flex-col items-center justify-center px-40 gap-10 relative pb-12 max-md:px-10">
+    <div className="w-full h-screen pt-10 flex flex-col items-center justify-center px-40 gap-10 relative pb-12 max-md:px-10 max-xl:px-10">
       <TsParticles />
       <div className="w-[90%] h-[80%] rounded-3xl bg-[#E1E1E1] flex items-start justify-between px-20 py-10 flex-col shadow-inner max-md:px-10 max-md:py-5">
         <div className="h-[50%] flex-col pt-10 flex items-start justify-start gap-6">
-          <h2 className="text-5xl tracking-wide leading-snug font-semibold text-start pr-36 max-md:text-4xl max-md:pr-10">
+          <h2 className="text-5xl tracking-wide leading-snug font-semibold text-start pr-36 max-md:text-4xl max-md:pr-10 max-xl:text-5xl max-xl:pr-10">
             Challenge your peers, dominate the game, and win big money!
           </h2>
           <h4 className="text-xl text-start font-medium text-gray-700">
