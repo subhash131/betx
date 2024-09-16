@@ -14,6 +14,9 @@ export const shortenPk = (pk: PublicKey, chars = 5) => {
 export const solToLamports = (sol: number) => {
   return sol * 1_000_000_000;
 };
+export const LamportsToSol = (lamports: number) => {
+  return lamports / 1_000_000_000;
+};
 
 export const confirmTx = async (txHash: string, connection: Connection) => {
   const blockhashInfo = await connection.getLatestBlockhash();
