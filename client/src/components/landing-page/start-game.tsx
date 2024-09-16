@@ -16,13 +16,14 @@ import { toast } from "sonner";
 import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 import { FaCheck, FaCheckCircle } from "react-icons/fa";
 import { useLobbyPublicKey } from "@/hooks/use-lobby-publickey";
-import { solToLamports } from "@/utils/helpers";
+import { LamportsToSol, solToLamports } from "@/utils/helpers";
 import { MasterT } from "@/state-manager/features/master";
 import { BsCopy } from "react-icons/bs";
 import { useRoom } from "@/providers/room-provider";
 import { RootState } from "@/state-manager/store";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { updateLobbyId } from "@/state-manager/features/lobby";
+import Link from "next/link";
 
 const StartGame = () => {
   const { socket } = useRoom();
@@ -36,6 +37,11 @@ const StartGame = () => {
   const [lobbyCreated, setLobbyCreate] = useState<boolean>(false);
   const [currentLobbyId, setCurrentLobbyId] = useState<PublicKey>();
   const [lobbyIdCopied, setLobbyIdCopied] = useState<boolean>(false);
+  const [joinedPlayer, setJoinedPlayer] = useState<{
+    playerTwoUsername: string;
+    playerTwoId: string;
+  }>();
+  const [betPlaced, setBetPlaced] = useState<boolean>(false);
 
   const { username } = useSelector((state: RootState) => state.UserReducer);
 
@@ -122,9 +128,76 @@ const StartGame = () => {
     }
   };
 
+  const placeBet = async () => {
+    if (!wallet?.publicKey) {
+      toast.error("Please connect your wallet!");
+      return;
+    }
+
+    if (!program) {
+      toast.error("Failed to connect, please refresh the page");
+      return;
+    }
+    if (!lastLobbyId) {
+      toast.error("Failed to connect, please refresh the page");
+      return;
+    }
+
+    if (!currentLobbyId) {
+      toast.error("lobby not found");
+      return;
+    }
+
+    const lobby = await program?.account.lobby.fetch(currentLobbyId);
+
+    const lobbyPk = useLobbyPublicKey(Number(lobby.id));
+
+    try {
+      setLoading(true);
+      const res = await program.methods
+        .placeBet(new BN(lobby.id))
+        .accounts({
+          lobby: lobbyPk,
+          authority: wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc();
+      if (res) {
+        console.log("🚀 ~ placeBet ~ res:", res);
+        setBetPlaced(true);
+      }
+    } catch (err) {
+      if (err instanceof WalletSignTransactionError) {
+        toast.error(err.message);
+      } else if (err instanceof SendTransactionError) {
+        toast.error(err.transactionError.message);
+      } else if (err instanceof AnchorError) {
+        toast.error(err.error.errorMessage);
+      } else {
+        console.log("🚀 ~ Join Game ~ err:", err);
+      }
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     getMaster();
   }, [program]);
+  useEffect(() => {
+    socket?.on("updatedLobby", (data) => {
+      // console.log("🚀 ~ socket?.on ~ data:", data);
+      const lobbyId = currentLobbyId?.toString();
+      if (!lobbyId) return;
+      console.log("playerTwoId", data[lobbyId].playerTwoId);
+      console.log("playerTwoUsername", data[lobbyId].playerTwoUsername);
+      if (data[lobbyId].playerTwoId && data[lobbyId].playerTwoUsername) {
+        setJoinedPlayer({
+          playerTwoId: data[lobbyId].playerTwoId,
+          playerTwoUsername: data[lobbyId].playerTwoUsername,
+        });
+      }
+    });
+  }, [socket, currentLobbyId]);
 
   return (
     <div
@@ -224,12 +297,65 @@ const StartGame = () => {
           )}
           {lobbyCreated && (
             <div className="font-semibold flex flex-col gap-2 mt-4">
-              <h6>Waiting for Players join..!</h6>
-              <div className="h-fit py-2 px-4 rounded-lg flex-col bg-[#282828] w-full flex items-start justify-center">
-                <p>name</p>
-                <p className="text-xs">asnamxksm</p>
-              </div>
+              <h6>
+                {joinedPlayer ? "Player Joined" : "Waiting for Players join..!"}
+              </h6>
+              {joinedPlayer && (
+                <>
+                  <div className="h-fit py-2 px-4 rounded-lg flex-col bg-[#282828] w-full flex items-start justify-center">
+                    <p>{joinedPlayer?.playerTwoUsername}</p>
+                    <p className="text-xs">
+                      {joinedPlayer.playerTwoId.toString().substring(0, 14)}
+                      ....
+                      {joinedPlayer.playerTwoId
+                        .toString()
+                        .substring(
+                          joinedPlayer.playerTwoId.toString().length - 4,
+                          joinedPlayer.playerTwoId.toString().length
+                        )}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h6>Bet Amount</h6>
+                    <div className="flex items-center justify-center gap-4">
+                      <div className="relative w-fit py-2 px-4 rounded-lg bg-[#282828] flex items-center justify-center text-xs text-nowrap disabled:cursor-default text-white border">
+                        {betAmount} SOL
+                      </div>
+                      <button
+                        className="bg-white px-4 py-2 rounded-lg text-black text-xs hover:scale-95 active:scale-90 transition-transform disabled:scale-100"
+                        type="button"
+                        disabled={betPlaced}
+                        onClick={placeBet}
+                      >
+                        {betPlaced ? (
+                          <div className="text-nowrap flex items-center">
+                            Bet Placed
+                            <span className="ml-2">
+                              <FaCheckCircle />
+                            </span>
+                          </div>
+                        ) : loading ? (
+                          <AiOutlineLoading3Quarters className="animate-spin" />
+                        ) : (
+                          "Place Bet"
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
+          )}
+          {betPlaced && (
+            <Link
+              href={`/game/${currentLobbyId}`}
+              className="bg-white px-4 py-2 rounded-xl text-black font-semibold mt-6"
+              onClick={() => {
+                dispatch(toggleModal(null));
+              }}
+            >
+              Start Game
+            </Link>
           )}
         </div>
       </form>
