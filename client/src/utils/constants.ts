@@ -4,8 +4,10 @@ export const MASTER_SEED = "master";
 export const LOBBY_SEED = "lobby";
 export const USER_SEED = "user";
 
+const programId = process.env.NEXT_PUBLIC_PROGRAM_ID;
+
 export const PROGRAM_ID = new PublicKey(
-  "DfDwFTWM6f99KRBYEWxShUsbXgJ4K1NR9KbSNWvQVu4H"
+  programId || "DfDwFTWM6f99KRBYEWxShUsbXgJ4K1NR9KbSNWvQVu4H"
 );
 
 export const samuraiSPrites = {
